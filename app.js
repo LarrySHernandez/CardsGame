@@ -17,12 +17,31 @@
 //         console.log(err)
 //     })
 
+async function getNumberFacts(favNum){
+    
+    let res = await Promise.all([axios.get(`http://numbersapi.com/${favNum}/math`),
+                                axios.get(`http://numbersapi.com/${favNum}/math`),
+                                axios.get(`http://numbersapi.com/${favNum}/math`)]);
+    
+    for(let val of res){
+        console.log(val.data);
+    }
+    
+    
+}
+
+
 // function addToPage(data){
 //     let p = document.createElement('p');
 //     p.innerHTML = data;
 //     ul.append(p);
 
 // }
+
+
+
+
+
 // let requests = [];
 
 // axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
@@ -45,26 +64,48 @@ let cardsContainer = document.getElementById('cards');
 let newCardBtn = document.getElementById('new_card');
 let deck_id = null;
 
-//Initial request to load a new deck and store id in deck_id
-axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
-    .then(val =>{
-        deck_id = val.data.deck_id;
-    });
+// //Initial request to load a new deck and store id in deck_id
+// axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+//     .then(val =>{
+//         deck_id = val.data.deck_id;
+//     });
+
+// //Add even listener to load new card once button is clicked
+// newCardBtn.addEventListener('click', function(){
+//     axios.get(`https://deckofcardsapi.com/api/deck/${deck_id}/draw/?count=1`)
+//         .then(val => {  
+//             if(val.data.cards[0]){
+//                 loadCard(val);
+//             }else{
+//                 alert('No more cards in deck!');
+//             }
+//         })
+//         .catch(err => {
+//             console.log(err);
+//         })
+// });
+
+
+// Refactored Version
+async function newDeck(){
+    let res = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
+    deck_id = res.data.deck_id;
+}
+
+newDeck()
 
 //Add even listener to load new card once button is clicked
-newCardBtn.addEventListener('click', function(){
-    axios.get(`https://deckofcardsapi.com/api/deck/${deck_id}/draw/?count=1`)
-        .then(val => {  
-            if(val.data.cards[0]){
-                loadCard(val);
-            }else{
-                alert('No more cards in deck!')
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        })
+newCardBtn.addEventListener('click', async function(){
+    let res = await axios.get(`https://deckofcardsapi.com/api/deck/${deck_id}/draw/?count=1`)
+    if(res.data.cards[0]){
+        loadCard(res);
+    }else {
+        alert('No more cards in deck!')
+    }
 });
+
+
+
 
 //function to add new card to page
 function loadCard(val){
